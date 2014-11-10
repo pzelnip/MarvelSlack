@@ -1,0 +1,9 @@
+To install from a fresh checkout of master:
+
+heroku create
+git push heroku master
+heroku ps:scale web=1
+heroku ps
+heroku config:set marvelPublicKey=SET_TO_YOUR_PUBLIC_MARVEL_API_KEY
+heroku config:set marvelPrivateKey=SET_TO_YOUR_PRIVATE_MARVEL_API_KEY
+heroku config:set slackWebHookURL=SET_TO_YOUR_SLACK_WEBHOOK_URL
