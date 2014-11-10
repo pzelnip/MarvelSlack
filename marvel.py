@@ -100,7 +100,16 @@ Description: %s
 Wiki: %s
 Thumbnail: %s
 """ % (user, text, result['description'], result['wiki'], result['thumbnail'])
-    post_to_slack(text, channel, "MarvelBot", result['thumbnail'])
+
+    # Kludgy: a slash command entered in a private chat with another user will
+    # give "directmessage" as the channel room, but not give the user name
+    # that the conversation is happening with.  As such, a slash command done
+    # in a DM chat cannot be broadcast to all in the room via the incoming
+    # webhooks integration, so instead we Slackbot the message to the sender
+    if channel == 'directmessage':
+        return text
+    else:
+        post_to_slack(text, channel, "MarvelBot", result['thumbnail'])
 
     return ""
     
