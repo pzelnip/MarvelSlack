@@ -100,9 +100,9 @@ Description: %s
 Wiki: %s
 Thumbnail: %s
 """ % (user, text, result['description'], result['wiki'], result['thumbnail'])
-    post_to_slack(text, channel, "MarvelBot", result['thumbnail'])
+    #post_to_slack(text, channel, "MarvelBot", result['thumbnail'])
 
-    return ""
+    return text #""
     
     
 def post_to_slack(text, channel, username, icon_url='http://fc05.deviantart.net/fs46/i/2009/188/1/d/Marvel_Comics_Dock_Icon_by_Meganubis.png'):
