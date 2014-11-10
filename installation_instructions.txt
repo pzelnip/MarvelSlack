@@ -1,4 +1,10 @@
-To install from a fresh checkout of master:
+The idea is to combine the slash command and incoming webhooks Slack 
+integrations.  To provide the "glue" between these integrations, 
+the app needs to be hosted somewhere.  I use Heroku.  To set it up 
+though first add the Incoming Webhooks integration in Slack, and make
+a note of your Webhook URL.
+
+To set up & to deploy from a fresh checkout of master to Heroku:
 
 heroku create
 git push heroku master
@@ -7,3 +13,22 @@ heroku ps
 heroku config:set marvelPublicKey=SET_TO_YOUR_PUBLIC_MARVEL_API_KEY
 heroku config:set marvelPrivateKey=SET_TO_YOUR_PRIVATE_MARVEL_API_KEY
 heroku config:set slackWebHookURL=SET_TO_YOUR_SLACK_WEBHOOK_URL
+
+Once the heroku app is running (test it out by going to 
+<yourHerokuURL>/marvel/Wolverine), add the slash & incoming webhooks
+integrations in Slack.
+
+For the slash command integration, use:
+
+/marvel
+
+as the command, and 
+
+<yourHerokuURL>/test
+
+as the URL for the slash integration.  Also add:
+
+[character]
+
+As the usage hint.
+
