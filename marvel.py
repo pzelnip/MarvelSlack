@@ -1,34 +1,28 @@
-import urllib 
-import random
-import requests
-import time
-import json
-import sys 
-from hashlib import md5
 from collections import namedtuple
 from ConfigParser import RawConfigParser
+from hashlib import md5
+import json
+import os
+import random
+import sys 
+import time
+import urllib 
 
 from flask import Flask
 from flask import request
+import requests
+
 
 app = Flask(__name__)
 
-CONFIG_KEY = 'config'
-CONFIG = None
 
+class CONFIG(object):
+    def __init__(self):
+        pass
 
-def read_config(cfgfile):
-    global CONFIG
-    Config = namedtuple('config', ['host', 'port', 'marvelPublicKey', 'marvelPrivateKey', 'slackWebHookURL'])
-    configp = RawConfigParser()    
-    configp.read(cfgfile)
-    CONFIG = Config(
-        configp.get(CONFIG_KEY, 'host'),
-        configp.get(CONFIG_KEY, 'port'),
-        configp.get(CONFIG_KEY, 'marvelPublicKey'),
-        configp.get(CONFIG_KEY, 'marvelPrivateKey'),
-        configp.get(CONFIG_KEY, 'slackWebHookURL'),
-    )
+    @classmethod
+    def get(cls, value):
+        return os.environ[value]
 
 
 def parse_marvel_entry(result):
@@ -55,8 +49,8 @@ def parse_marvel_entry(result):
 
 
 def marvel(char):
-    marvel_public_key = CONFIG.marvelPublicKey 
-    marvel_private_key = CONFIG.marvelPrivateKey 
+    marvel_public_key = CONFIG.get('marvelPublicKey')
+    marvel_private_key = CONFIG.get('marvelPrivateKey')
 
     timestamp = str(int(time.time()))
     hash_val = md5(timestamp + marvel_private_key + marvel_public_key).hexdigest()
@@ -76,12 +70,14 @@ def marvel(char):
     else:
         return (False, "Error: " + request)
 
+
 @app.route('/')
 def hello():
     return "Hello world"
 
+
 @app.route('/marvel/<char>')
-def index(char):
+def marvelchar(char):
     return json.dumps(marvel(char))
 
  
@@ -110,7 +106,7 @@ Thumbnail: %s
     
     
 def post_to_slack(text, channel, username, icon_url='http://fc05.deviantart.net/fs46/i/2009/188/1/d/Marvel_Comics_Dock_Icon_by_Meganubis.png'):
-    url = CONFIG.slackWebHookURL 
+    url = CONFIG.get('slackWebHookURL')
 
     headers = {'content-type':'application/json'}
     payload = json.dumps({
@@ -124,14 +120,8 @@ def post_to_slack(text, channel, username, icon_url='http://fc05.deviantart.net/
     print "POST: %s - %s" % (request.status_code, request.reason)
     
 
-def bottle():
-    app.run() #host=CONFIG.host, port=CONFIG.port)
-
-
 def main():
-    read_config('config.cfg')
-    print CONFIG 
-    bottle()
+    app.run()
 
 
 if __name__ == "__main__":
