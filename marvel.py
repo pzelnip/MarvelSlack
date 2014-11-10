@@ -8,7 +8,10 @@ from hashlib import md5
 from collections import namedtuple
 from ConfigParser import RawConfigParser
 
-from bottle import route, run, template, request, get, post
+from flask import Flask
+from flask import request
+
+app = Flask(__name__)
 
 CONFIG_KEY = 'config'
 CONFIG = None
@@ -73,17 +76,23 @@ def marvel(char):
     else:
         return (False, "Error: " + request)
 
+@app.route('/')
+def hello():
+    return "Hello world"
 
-@route('/marvel/<char>')
+@app.route('/marvel/<char>')
 def index(char):
     return json.dumps(marvel(char))
 
  
-@route('/test')
-def index():
-    q = request.query
-    (text, channel, user) = (q['text'], q['channel_name'], q['user_name'])
-    
+@app.route('/test')
+def test():
+    q = request.args
+    (text, channel, user) = (
+        q.get('text', ''),
+        q.get('channel_name', ''),
+        q.get('user_name', ''))
+
     (valid, result) = marvel(text)
 
     if not valid:
@@ -116,7 +125,7 @@ def post_to_slack(text, channel, username, icon_url='http://fc05.deviantart.net/
     
 
 def bottle():
-    run(host=CONFIG.host, port=CONFIG.port)
+    app.run() #host=CONFIG.host, port=CONFIG.port)
 
 
 def main():
